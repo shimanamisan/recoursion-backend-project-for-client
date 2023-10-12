@@ -8,7 +8,7 @@
     // ワークスペースを指定
     "workspaceFolder": "/workspace",
     // vscode でコンテナに接続した際のユーザーを指定する
-    "remoteUser": "user01",
+    "remoteUser": "node",
     // VSCodeを閉じたときのコンテナの挙動を指定
     "shutdownAction": "stopCompose", // default -> stopCompose
     // devcontainerで開いた時のvscode側の設定カスタマイズ
