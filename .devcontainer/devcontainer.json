@@ -1,0 +1,45 @@
+{
+    // INFO: https://bufferings.hatenablog.com/entry/2020/06/11/233201
+    // INFO: https://techblog.roxx.co.jp/entry/2021/04/19/132838
+    "name": "recoursion-backend-project-for-client",
+    "dockerComposeFile": "docker-compose.yml",
+    // docker-compose.ymlファイル内のどのサービスをVS Codeで操作するか指定する
+    "service": "client",
+    // ワークスペースを指定
+    "workspaceFolder": "/workspace",
+    // vscode でコンテナに接続した際のユーザーを指定する
+    "remoteUser": "user01",
+    // VSCodeを閉じたときのコンテナの挙動を指定
+    "shutdownAction": "stopCompose", // default -> stopCompose
+    // devcontainerで開いた時のvscode側の設定カスタマイズ
+    "customizations": {
+        // VS Code固有のプロパティを設定します
+        "vscode": {
+            // 拡張機能などの設定
+            "settings": {
+                /*****************************
+                * VS Codeの基本設定
+                ******************************/
+                // エディターのインデントのサイズを指定（デフォルトは4）
+                "editor.tabSize": 4,
+                "[javascript]": {
+                    // javascriptで使用するデフォルトのフォーマッターをインストールした拡張機能に指定する
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                }
+
+            },
+            // コンテナ内にインストールする拡張機能を指定する
+            "extensions": [
+                // Search node_modules: node_modules ディレクトリ内のファイルを素早く開くことができる
+                "jasonnutter.search-node-modules",
+                // Node.js Exec: ショートカットキーで選択した現在開いているファイルを実行する
+                "miramac.vscode-exec-node",
+                // JS Refactor :: JS CodeFormer: コードのリファクタリングをサポートする
+                "cmstead.jsrefactor",
+                // Prettier - Code formatter: コードを整形する
+                "esbenp.prettier-vscode"
+             
+            ]
+        }
+    }
+}

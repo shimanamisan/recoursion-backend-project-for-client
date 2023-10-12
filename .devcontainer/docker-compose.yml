@@ -1,0 +1,26 @@
+version: "3.9"
+
+networks:
+  external-api-net:
+    name: recoursion-backend-project-external-api
+    external: true
+      
+services:
+
+  client:
+    container_name: recoursion-rpc-client
+    build:
+      context: ./node
+      dockerfile: ./Dockerfile
+    image: recoursion-rpc-client:1.0
+    # フォアグラウンドで実行するプロセスが無い場合でもコンテナが終了しないようにする
+    tty: true
+    environment:
+      - NODE_ENV=development
+    ports:
+      - 3000:3000
+    volumes:
+      - ../:/workspace:cached
+    networks:
+      external-api-net:
+        ipv4_address: 192.168.1.2
