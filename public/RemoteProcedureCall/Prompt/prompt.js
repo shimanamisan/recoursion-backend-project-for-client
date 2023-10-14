@@ -13,6 +13,7 @@ export default class Prompt {
     constructor(){
 
         this.#prompt = new Select({
+            name: 'method',
             message: 'サーバから呼び出すメソッドを選択して下さい',
             choices: [
               { name: 'floor(double x)', value: '1' },
@@ -28,7 +29,7 @@ export default class Prompt {
     async runPromptSelectMethod(){
         await this.#prompt.run()
             .then(answer => {
-                this.#selectMethodName = answer;
+                this.#selectMethodName = answer.method;
             })
             .catch(console.error);
     }
