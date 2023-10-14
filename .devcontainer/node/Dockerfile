@@ -5,6 +5,7 @@ RUN apk update && apk upgrade && \
     python3 \
     make \
     g++ \
+    git \
     # bashのインストール
     bash \
     # タイムゾーンの設定
