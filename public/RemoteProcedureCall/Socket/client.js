@@ -35,7 +35,7 @@ export default class Client {
     setSendMessageEvent() {
         // データを受信したときに発火するイベント
         this.#socket.on('data', (data) => {
-            console.log('Received:', data.toString());
+            console.log('Received Result:', data.toString());
             // 通信を閉じる
             this.#socket.destroy();
         });
