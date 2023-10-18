@@ -3,7 +3,7 @@ const { Select, Input, Form } = enquirer;
 
 export default class Prompt {
     
-    #resultObj = {};
+    #resultObj = {"jsonrpc":"2.0"};
 
     constructor(){ }
 
@@ -12,36 +12,69 @@ export default class Prompt {
         const config = {
             type: 'select',
             options: {
-                name: 'method',
                 message: 'サーバから呼び出すメソッドを選択して下さい',
                 choices: [
-                    { name: 'floor(double x)', value: '1' },
-                    { name: 'nroot(int n, int x)', value: '2' },
-                    { name: 'reverse(string s)', value: '3' },
-                    { name: 'validAnagram(string str1, string str2)', value: '4' },
-                    { name: 'sort(string[] strArr)', value: '5' },
+                    { name: 'floor(double x)', method: "floor", value: '1' },
+                    { name: 'nroot(int n, int x)', method: "nroot", value: '2' },
+                    { name: 'reverse(string s)', method: "reverse", value: '3' },
+                    { name: 'validAnagram(string str1, string str2)', method: "validAnagram", value: '4' },
+                    { name: 'sort(string[] strArr)', method: "sort", value: '5' },
                 ]
             }
         };
 
-        this.#resultObj.method = await this.runPrompt(config);
+        // メソッドを選択するプロンプトを作成して、ユーザーの入力を受け取る
+        const selectName = await this.runPromptMethod(config);
 
         // メソッド名からサーバに送信するメソッドidを検索する
-        this.#resultObj.id = parseInt(config.options.choices.find(choice => choice.name === this.#resultObj.method).value);
+        this.#resultObj.id = parseInt(config.options.choices.find(choice => choice.name === selectName).value);
+        // 選択された choices の name からメソッド名を検索する 
+        this.#resultObj.method = config.options.choices.find(choice => choice.name === selectName).method;
     }
 
     async runPromptSelectArgument(){
         const config = this.getArgumentPromptConfig();
-        this.#resultObj.param = await this.runPrompt(config);
+        // 引数を選択するプロンプトを作成して、ユーザーの入力を受け取る
+        this.#resultObj.param = await this.runPromptArgument(config);
     }
 
-    async runPrompt(config) {
+    async runPromptMethod(config) {
 
         try {
             const prompt = this.createPrompt(config);
             const answer = await prompt.run();
-            
+
             return answer;
+            
+        } catch (err) {
+            console.error('エラーが発生しました:', err.message);
+        }
+    }
+
+    async runPromptArgument(config) {
+
+        try {
+            const prompt = this.createPrompt(config);
+            const answer = await prompt.run();
+
+            // param がオブジェクト形式だったら param を配列に変換する
+            if(typeof answer === 'object' && answer !== null){
+                console.log(answer)
+                const argument = answer
+                return Object.values(argument).map(value => {
+                    // 数値に変換する。数値に変換できない場合は、元の値をそのまま返す。
+                    return isNaN(Number(value)) ? value : Number(value);
+                });
+                
+            }
+
+            // 'sort(string[] strArr)' が選択されていた場合
+            if(this.#resultObj.id === 5) {
+                return answer.split("");
+            }
+
+            // オブジェクト形式でなければ数値に変換できるか判定する
+            return isNaN(Number(answer)) ? answer : Number(answer);;
             
         } catch (err) {
             console.error('エラーが発生しました:', err.message);
@@ -49,7 +82,37 @@ export default class Prompt {
         }
     }
 
+    checkArgumentType(value) {
+
+        if(typeof value === 'string') {
+            return 'string';
+
+        }else if (typeof value === 'number') {
+            // 純粋な整数でない（小数点を含む）場合は double を返す
+            return Number.isInteger(value) ? 'int' : 'double';
+
+        }else if (typeof value === 'array') {
+            return 'array';
+
+        }
+
+        // 上記以外の型だった場合
+        return 'unknown';
+    }
+
     sendServerJsonMessage () {
+
+        // パラメータが配列か判定する
+        if (Array.isArray(this.#resultObj.param)) {
+            // param が配列の場合、各要素の型をチェックする
+            this.#resultObj.param_types = this.#resultObj.param.map(param => {
+                return this.checkArgumentType(param); // 各要素の型を文字列で返す
+            });
+
+        } else {
+            // param が配列でない場合、単一の型を設定する
+            this.#resultObj.param_types = this.checkArgumentType(this.#resultObj.param);
+        }
         return JSON.stringify(this.#resultObj);
     }
 
@@ -79,7 +142,7 @@ export default class Prompt {
 
                             }
 
-                             // すべてのバリデーションが通ればtrueを返す
+                            // すべてのバリデーションが通ればtrueを返す
                             return true;
                         },
                     }
@@ -97,14 +160,30 @@ export default class Prompt {
                         validate: (selectedItems) => {
 
                             for(let key in selectedItems){
-                                if(!selectedItems[key]) {
-                                    return `${key} に値を入力して下さい`;
+                                if(!isNaN(parseInt(selectedItems[key]))) {
+                                    return `${key} は数字ではなく文字列を指定して下さい`;
                                 }
                             }
 
                             // すべてのバリデーションが通ればtrueを返す
                             return true;
                         },
+                    }
+                };
+    
+            case 5:
+                return {
+                    type: 'input',
+                    options: {
+                        message: `${this.#resultObj.method} メソッドに引数を渡す値を入力して下さい`,
+                        validate: (selectedItems) => {
+        
+                            if(!isNaN(parseInt(selectedItems))){
+                                return '文字列を指定して下さい';
+                            }
+                            // 不正な値だった場合の文字列を返し再度入力を求める
+                            return true;
+                          },
                     }
                 };
     
