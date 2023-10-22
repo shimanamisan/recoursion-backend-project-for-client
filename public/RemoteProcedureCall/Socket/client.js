@@ -35,7 +35,9 @@ export default class Client {
     setSendMessageEvent() {
         // データを受信したときに発火するイベント
         this.#socket.on('data', (data) => {
-            console.log('Received Result:', data.toString());
+            console.log('Received Result:', JSON.parse(data));
+            // console.log('Received Result:', data.toString()); Received Result: {"results":"\u304a\u3048\u3046\u3044\u3042","result_type":"string","id":3}
+            // console.log(JSON.parse(data)) { results: 'おえういあ', result_type: 'string', id: 3 }
             // 通信を閉じる
             this.#socket.destroy();
         });
