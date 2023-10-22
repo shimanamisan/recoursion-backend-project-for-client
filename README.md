@@ -24,17 +24,6 @@ Docker と VS Code の拡張機能 [Remote Development](https://marketplace.visu
 
 # 使用方法
 
-プロジェクト`RemoteProcedureCall`を実行する場合はクライアントと共有するdockerネットワークを追加する作業が必要になります。
-
-```bash
-$ docker network create external-api --subnet=192.168.1.0/24 --gateway=192.168.1.1
-```
-
-ネットワークイメージ図
-![network](https://github.com/shimanamisan/recoursion-backend-project-for-php/assets/49751604/e87aafbd-927d-408d-b916-f4ea4f33b156)
-
-# 使用方法
-
 1. 適当な作業ディレクトリで、以下のコマンドを実行します。
     ```bash
     $ git clone git@github.com:shimanamisan/recoursion-backend-project-for-client.git
@@ -53,4 +42,10 @@ $ docker network create external-api --subnet=192.168.1.0/24 --gateway=192.168.1
     $ npm install
     ```
 
-## RemoteProcedureCallプロジェクトを使用する
+5. サーバ側のプログラムが実行されていることを確認して以下のコマンドを実行します。
+    ```bash
+    $ node index.js
+    ```
+    呼び出すメソッドを選択します。
+    
+    ![スクリーンショット 2023-10-23 071145](https://github.com/shimanamisan/recoursion-backend-project-for-client/assets/49751604/b6f6c110-7add-46eb-ae66-9efbe11507dd)
