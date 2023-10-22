@@ -25,11 +25,17 @@ export default class Prompt {
 
         // メソッドを選択するプロンプトを作成して、ユーザーの入力を受け取る
         const selectName = await this.runPromptMethod(config);
+        // プロンプトで選択されてたメソッド名で検索する
+        const selectedChoice = config.options.choices.find(choice => choice.name === selectName);
+        if (selectedChoice) {
+            
+            this.#resultObj.id = parseInt(selectedChoice.value);
+            this.#resultObj.method = selectedChoice.method;
 
-        // メソッド名からサーバに送信するメソッドidを検索する
-        this.#resultObj.id = parseInt(config.options.choices.find(choice => choice.name === selectName).value);
-        // 選択された choices の name からメソッド名を検索する 
-        this.#resultObj.method = config.options.choices.find(choice => choice.name === selectName).method;
+            return
+        }
+
+        throw new Error('値が見つかりません');
     }
 
     async runPromptSelectArgument(){
@@ -70,7 +76,7 @@ export default class Prompt {
 
             // 'sort(string[] strArr)' が選択されていた場合
             if(this.#resultObj.id === 5) {
-                return answer.split("");
+                return [...answer];
             }
 
             // オブジェクト形式でなければ数値に変換できるか判定する
@@ -91,7 +97,7 @@ export default class Prompt {
             // 純粋な整数でない（小数点を含む）場合は double を返す
             return Number.isInteger(value) ? 'int' : 'double';
 
-        }else if (typeof value === 'array') {
+        }else if (Array.isArray(value)) {
             return 'array';
 
         }
@@ -147,6 +153,21 @@ export default class Prompt {
                         },
                     }
                 };
+            
+            case 3 :
+                return {
+                    type: 'input',
+                    options: {
+                        message: `${this.#resultObj.method} メソッドに引数を渡す値を入力して下さい`,
+                        validate: (selectedItems) => {
+        
+                            if(!isNaN(parseInt(selectedItems))){
+                                return '文字列を指定して下さい';
+                            }
+                            return true;
+                        },
+                    }
+                }
     
             case 4:
                 return {
@@ -212,10 +233,10 @@ export default class Prompt {
             return new Select(config.options);
 
         } else if (config.type === 'input') {
-            return new Input(config.options)
+            return new Input(config.options);
         
         } else if (config.type === 'form') {
-            return new Form(config.options)
+            return new Form(config.options);
         }
 
         throw new Error('不正なプロンプトタイプが選択されています');
