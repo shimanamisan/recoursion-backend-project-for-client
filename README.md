@@ -48,4 +48,4 @@ Docker と VS Code の拡張機能 [Remote Development](https://marketplace.visu
     ```
     呼び出すメソッドを選択します。
     
-    ![スクリーンショット 2023-10-23 071145](https://github.com/shimanamisan/recoursion-backend-project-for-client/assets/49751604/b6f6c110-7add-46eb-ae66-9efbe11507dd)
+   ![スクリーンショット 2023-10-23 071145](https://github.com/shimanamisan/recoursion-backend-project-for-client/assets/49751604/b6e05617-9a6d-4323-8ded-d1c90bb01f74)
